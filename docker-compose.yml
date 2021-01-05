@@ -1,0 +1,27 @@
+version: '2.1'
+services:
+  backup:
+    image: mysql-backup-rclone
+    container_name: mysql-backup-rclone
+    restart: always
+    volumes:
+     - ${BACKUP_DIR}:/db
+     #- ./pre-backup:/scripts.d/pre-backup
+     - ./post-backup:/scripts.d/post-backup
+     - ./config-rclone:/config/rclone
+    network_mode: host
+    environment:
+      DB_DUMP_DEBUG: "true"
+      DB_DUMP_TARGET: "/db"
+      DB_DUMP_FREQ: "${DB_DUMP_FREQ}"
+      DB_USER: "${MYSQL_USER}"
+      DB_PASS: "${MYSQL_PASSWORD}"
+      DB_SERVER: "${MYSQL_HOST}"
+      DB_PORT: "${MYSQL_PORT}"
+      RCLONE_TARGET: "${RCLONE_TARGET}"
+      DUMPFILE_DELETE: ""
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
